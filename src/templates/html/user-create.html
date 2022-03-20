@@ -1,0 +1,26 @@
+{% extends 'html/layout.html' %}
+{% block content %}
+<form class="container justify-content col-4 needs-validation">
+    <div class="mb-3">
+        <label for="login" class="row form-label">Login</label>
+        <input id="login" class="row form-control" type="text" required>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="row form-label">Passwd</label>
+        <input id="password" class="row form-control" type="text" required>
+    </div>
+    <div class="mb-3">
+        <label for="last_name" class="row form-label">Last Name</label>
+        <input id="last_name" class="row form-control" type="text" required>
+    </div>
+    <div class="mb-3">
+        <label for="first_name" class="row form-label">First Name</label>
+        <input id="first_name" class="row form-control" type="text" required>
+    </div>
+    <div class="mb-3">
+        <label for="is_admin" class="form-label">Is Admin</label>
+        <input id="is_admin" type="checkbox" required>
+    </div>
+    <button class="btn btn-success">Save</button>
+</form>
+{% endblock %}

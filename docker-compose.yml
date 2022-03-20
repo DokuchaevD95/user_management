@@ -1,0 +1,11 @@
+version: "3.1"
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: "user_management"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "3LdNmrGS"
+    ports:
+      - "5432:5432"
