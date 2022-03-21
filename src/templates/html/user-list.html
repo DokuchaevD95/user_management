@@ -26,12 +26,13 @@
                 <td>{{ user.created_at }}</td>
                 <td>
                     {% if curr_user.is_admin %}
-                    <button class="btn btn-sm btn-warning">Edit</button>
-                    <button class="btn btn-sm btn-danger">Delete</button>
+                    <button id="edit" data-user_id="{{ user.id }}" class="btn btn-sm btn-warning">Edit</button>
+                    <button id="delete" data-user_id="{{ user.id }}" class="btn btn-sm btn-danger">Delete</button>
                     {% endif %}
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    <script src="/templates/js/user-list.js"></script>
 {% endblock %}

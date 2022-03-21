@@ -1,4 +1,4 @@
-signInBtn = document.querySelector('#sign-in');
+const signInBtn = document.querySelector('#sign-in');
 signInBtn.addEventListener('click', checkAuth)
 
 

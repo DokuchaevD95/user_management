@@ -2,31 +2,23 @@
 
 __all__ = ['user_router']
 
-from jwt import decode as jwt_decode
 from typing import Optional
-from fastapi import APIRouter, Depends, Cookie
+from datetime import datetime
+from fastapi import APIRouter, Depends, Form
 from fastapi.responses import HTMLResponse, Response, RedirectResponse
 
-from config import config
 from models import UserModel
 from services.user import UserService
 from shared.jinja import jinja_env
+from shared.current_user import get_curr_user
 
 
 user_router = APIRouter(prefix='/users')
 
 
-def check_auth(token: Optional[str] = Cookie(None)) -> Optional[UserModel]:
-    if token:
-        user_content = jwt_decode(token, key=config['jwt_secret'], algorithms='HS256')
-        curr_user = UserModel(**user_content)
-        return curr_user
-    return None
-
-
 @user_router.get('/list')
 async def render_users_list(user_service: UserService = Depends(UserService),
-                            curr_user: Optional[UserModel] = Depends(check_auth)
+                            curr_user: Optional[UserModel] = Depends(get_curr_user)
                             ) -> Response:
     if not curr_user:
         return RedirectResponse('/auth')
@@ -40,35 +32,64 @@ async def render_users_list(user_service: UserService = Depends(UserService),
     return HTMLResponse(status_code=200, content=content)
 
 
+@user_router.get('/create')
+async def render_user_create(curr_user: Optional[UserModel] = Depends(get_curr_user)) -> Response:
+    if not curr_user or not curr_user.is_admin:
+        return RedirectResponse('/users/list')
+
+    template = jinja_env.get_template('html/user-create.html')
+    content = await template.render_async()
+    return HTMLResponse(status_code=200, content=content)
+
+
+@user_router.get('/edit/{user_id}')
+async def render_user_edit(user_id: int,
+                           curr_user: Optional[UserModel] = Depends(get_curr_user),
+                           user_service: UserService = Depends(UserService)
+                           ) -> Response:
+    if not curr_user or not curr_user.is_admin:
+        return RedirectResponse('/users/list')
+
+    user = await user_service.get(user_id)
+    template = jinja_env.get_template('html/user-edit.html')
+    content = await template.render_async(user=user)
+    return HTMLResponse(content=content)
+
+
 @user_router.get('/delete/{user_id}')
 async def delete_user(user_id: int,
-                      curr_user: Optional[UserModel] = Depends(check_auth),
+                      curr_user: Optional[UserModel] = Depends(get_curr_user),
                       user_service: UserService = Depends(UserService)
                       ) -> Response:
     if not curr_user or not curr_user.is_admin:
-        return RedirectResponse('/list')
+        return RedirectResponse('/users/list')
 
     await user_service.delete(user_id)
-    return RedirectResponse('/list')
+    return RedirectResponse('/users/list', status_code=302)
 
 
-@user_router.get('/create')
-async def render_user_create(curr_user: Optional[UserModel] = Depends(check_auth)) -> Response:
+@user_router.post('/save')
+@user_router.post('/save/{user_id}')
+async def upsert_user(user_id: Optional[int] = None,
+                      login: str = Form(...),
+                      password: str = Form(...),
+                      first_name: str = Form(...),
+                      last_name: str = Form(...),
+                      is_admin: Optional[bool] = Form(False),
+                      curr_user: Optional[UserModel] = Depends(get_curr_user),
+                      user_service: UserService = Depends(UserService)
+                      ) -> Response:
     if not curr_user or not curr_user.is_admin:
-        return RedirectResponse('/list')
+        return RedirectResponse('/users/list', status_code=302)
 
-    template = jinja_env.get_template('html/user-create.html')
-    content = await template.render_async()
-    return HTMLResponse(status_code=200, content=content)
-
-
-@user_router.get('/save')
-async def save_user(curr_user: Optional[UserModel] = Depends(check_auth),
-                    user_service: UserService = Depends(UserService)
-                    ) -> Response:
-    if not curr_user or not curr_user.is_admin:
-        return RedirectResponse('/list')
-
-    template = jinja_env.get_template('html/user-create.html')
-    content = await template.render_async()
-    return HTMLResponse(status_code=200, content=content)
+    new_user = UserModel(
+        id=user_id,
+        login=login,
+        password=password,
+        first_name=first_name,
+        last_name=last_name,
+        is_admin=is_admin,
+        created_at=datetime.now()
+    )
+    await user_service.upsert(new_user)
+    return RedirectResponse('/users/list', status_code=302)

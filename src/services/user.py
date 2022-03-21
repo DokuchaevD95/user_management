@@ -54,7 +54,7 @@ class UserService:
                 statement = select(UserOrm).where(
                     UserOrm.id == id_
                 )
-                user: UserOrm = await session.execute(statement)
+                user: UserOrm = await session.scalar(statement)
                 if not user:
                     return None
                 user.deleted_at = datetime.now()
@@ -64,11 +64,17 @@ class UserService:
                 return UserModel.from_orm(user)
 
     @staticmethod
-    async def create(user: UserModel) -> UserModel:
+    async def upsert(user: UserModel) -> UserModel:
         async with async_session() as session:
             async with session.begin():
-                user_orm = UserOrm(**user.json())
+                if user.id:
+                    statement = select(UserOrm).where(UserOrm.id == user.id)
+                    user_orm = await session.scalar(statement)
+                    for key, value in user.dict().items():
+                        setattr(user_orm, key, value)
+                else:
+                    user_orm = UserOrm(**user.dict())
+
                 session.add(user_orm)
                 await session.commit()
-
                 return UserModel.from_orm(user_orm)

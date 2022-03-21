@@ -1,26 +1,27 @@
 {% extends 'html/layout.html' %}
 {% block content %}
-<form class="container justify-content col-4 needs-validation" action="/users/save">
-    <div class="mb-3">
+<link rel="stylesheet" href="/templates/css/user-edit.css">
+<form class="container justify-content col-4 needs-validation" action="/users/save/{{ user.id }}" method="POST">
+    <div class="mb-3 form-group">
         <label for="login" class="row form-label">Login</label>
-        <input id="login" class="row form-control" type="text" required>
+        <input name="login" value="{{ user.password }}" id="login" class="row form-control" type="text" required>
     </div>
-    <div class="mb-3">
+    <div class="mb-3 form-group">
         <label for="password" class="row form-label">Passwd</label>
-        <input id="password" class="row form-control" type="text" required>
+        <input name="password" value="{{ user.password }}" id="password" class="row form-control" type="password" required>
     </div>
-    <div class="mb-3">
+    <div class="mb-3 form-group">
         <label for="last_name" class="row form-label">Last Name</label>
-        <input id="last_name" class="row form-control" type="text" required>
+        <input name="last_name" value="{{ user.last_name }}" id="last_name" class="row form-control" type="text" required>
     </div>
-    <div class="mb-3">
+    <div class="mb-3 form-group">
         <label for="first_name" class="row form-label">First Name</label>
-        <input id="first_name" class="row form-control" type="text" required>
+        <input name="first_name" value="{{ user.first_name }}" id="first_name" class="row form-control" type="text" required>
     </div>
-    <div class="mb-3">
+    <div class="mb-3 form-group">
         <label for="is_admin" class="form-label">Is Admin</label>
-        <input id="is_admin" type="checkbox" required>
+        <input name="is_admin" checked="{{ user.is_admin }}" id="is_admin" class="form-check-input" type="checkbox" required>
     </div>
-    <button class="btn btn-success">Save</button>
+    <button class="btn btn-success" type="submit">Save</button>
 </form>
 {% endblock %}

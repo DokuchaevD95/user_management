@@ -11,8 +11,10 @@ from fastapi import APIRouter, Depends, Response
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
 from config import config
+from models import UserModel
 from services.user import UserService
 from shared.jinja import jinja_env
+from shared.current_user import get_curr_user
 
 
 auth_router = APIRouter()
@@ -23,8 +25,12 @@ class AuthParams(BaseModel):
     password: str
 
 
+@auth_router.get('/')
 @auth_router.get('/auth')
-async def render_auth_page() -> Response:
+async def render_auth_page(curr_user: Optional[UserModel] = Depends(get_curr_user)) -> Response:
+    if curr_user:
+        return RedirectResponse('/users/list')
+
     template = jinja_env.get_template('html/auth.html')
     content = await template.render_async()
     return HTMLResponse(content)
@@ -36,7 +42,7 @@ async def check_auth(params: AuthParams, user_service: UserService = Depends(Use
     if user and user.password == params.password:
         content = user.json(exclude={'password'})
         content = json.loads(content)
-        content['token'] = jwt_encode(content, config['jwt_secret'], algorithm='HS256')
+        content['token'] = jwt_encode(content, config['jwt_secret'], algorithm=config['jwt_alg'])
         return JSONResponse(content=content)
 
     return Response(status_code=401, content='Incorrect login or passwd was passed')

@@ -1,26 +1,26 @@
 {% extends 'html/layout.html' %}
 {% block content %}
-<form class="container justify-content col-4 needs-validation">
-    <div class="mb-3">
+<form class="container justify-content col-4 needs-validation" action="/users/save" method="POST">
+    <div class="mb-3 form-group">
         <label for="login" class="row form-label">Login</label>
-        <input id="login" class="row form-control" type="text" required>
+        <input name="login" id="login" class="row form-control" type="text" required>
     </div>
-    <div class="mb-3">
+    <div class="mb-3 form-group">
         <label for="password" class="row form-label">Passwd</label>
-        <input id="password" class="row form-control" type="text" required>
+        <input name="password" id="password" class="row form-control" type="password" required>
     </div>
-    <div class="mb-3">
+    <div class="mb-3 form-group">
         <label for="last_name" class="row form-label">Last Name</label>
-        <input id="last_name" class="row form-control" type="text" required>
+        <input name="last_name" id="last_name" class="row form-control" type="text" required>
     </div>
-    <div class="mb-3">
+    <div class="mb-3 form-group">
         <label for="first_name" class="row form-label">First Name</label>
-        <input id="first_name" class="row form-control" type="text" required>
+        <input name="first_name" id="first_name" class="row form-control" type="text" required>
     </div>
-    <div class="mb-3">
+    <div class="mb-3 form-group">
         <label for="is_admin" class="form-label">Is Admin</label>
-        <input id="is_admin" type="checkbox" required>
+        <input name="is_admin" id="is_admin" type="checkbox">
     </div>
-    <button class="btn btn-success">Save</button>
+    <button class="btn btn-success" type="submit">Save</button>
 </form>
 {% endblock %}

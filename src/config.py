@@ -11,5 +11,6 @@ config = {
     'username': 'admin',
     'password': '3LdNmrGS'
   },
-  'jwt_secret': '214sdfg345dew4r2'
+  'jwt_secret': '214sdfg345dew4r2',
+  'jwt_alg': 'HS256'
 }
