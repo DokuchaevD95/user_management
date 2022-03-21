@@ -18,6 +18,15 @@ async def seed():
         );
     """
 
-    async with engine.begin() as conn:
-        await conn.run_sync(BaseOrm.metadata.create_all)
-        await conn.execute(text(statement))
+    conn = None
+    while not conn:
+        try:
+            conn = await engine.begin()
+        except ConnectionRefusedError:
+            pass
+
+    await conn.run_sync(BaseOrm.metadata.create_all)
+    await conn.execute(text(statement))
+    await conn.commit()
+
+    await conn.close()

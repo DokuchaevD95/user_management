@@ -82,7 +82,7 @@ async def upsert_user(user_id: Optional[int] = None,
     if not curr_user or not curr_user.is_admin:
         return RedirectResponse('/users/list', status_code=302)
 
-    new_user = UserModel(
+    user = UserModel(
         id=user_id,
         login=login,
         password=password,
@@ -91,5 +91,5 @@ async def upsert_user(user_id: Optional[int] = None,
         is_admin=is_admin,
         created_at=datetime.now()
     )
-    await user_service.upsert(new_user)
+    await user_service.upsert(user)
     return RedirectResponse('/users/list', status_code=302)
