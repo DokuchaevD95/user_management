@@ -5,6 +5,7 @@ __all__ = ['UserService']
 from datetime import datetime
 from sqlalchemy import select
 from typing import Optional, List
+from fastapi import HTTPException
 
 from database import async_session
 from models import UserModel, UserOrm
@@ -19,9 +20,9 @@ class UserService:
                 UserOrm.deleted_at.is_(None)
             )
             user = await session.scalar(statement)
-            if user:
-                return UserModel.from_orm(user)
-            return None
+            if not user:
+                return None
+            return UserModel.from_orm(user)
 
     @staticmethod
     async def get(id_: int) -> Optional[UserModel]:
@@ -31,9 +32,9 @@ class UserService:
                 UserOrm.deleted_at.is_(None)
             )
             user = await session.scalar(statement)
-            if user:
-                return UserModel.from_orm(user)
-            return None
+            if not user:
+                raise HTTPException(status_code=404, detail='User not found')
+            return user
 
     @staticmethod
     async def fetch() -> List[UserModel]:
@@ -56,7 +57,8 @@ class UserService:
                 )
                 user: UserOrm = await session.scalar(statement)
                 if not user:
-                    return None
+                    raise HTTPException(status_code=404, detail='User not found')
+
                 user.deleted_at = datetime.now()
                 session.add(user)
                 await session.commit()
@@ -68,6 +70,13 @@ class UserService:
         async with async_session() as session:
             async with session.begin():
                 user_orm = UserOrm(**user.dict())
+
+                statement = select(UserOrm).where(
+                    UserOrm.login == user.login.lower()
+                )
+                if await session.scalar(statement):
+                    raise HTTPException(status_code=400, detail='Login already in use')
+
                 session.add(user_orm)
                 await session.commit()
                 return UserModel.from_orm(user_orm)
@@ -76,6 +85,12 @@ class UserService:
     async def update(user_id: int, user: UserModel) -> UserModel:
         async with async_session() as session:
             async with session.begin():
+                statement = select(UserOrm).where(
+                    UserOrm.login == user.login.lower()
+                )
+                if await session.scalar(statement):
+                    raise HTTPException(status_code=400, detail='Login already in use')
+
                 statement = select(UserOrm).where(
                     UserOrm.id == user_id
                 )

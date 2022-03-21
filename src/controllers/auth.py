@@ -7,7 +7,7 @@ import json
 from jwt import encode as jwt_encode
 from typing import Optional
 from pydantic import BaseModel
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
 from config import config
@@ -45,7 +45,7 @@ async def check_auth(params: AuthParams, user_service: UserService = Depends(Use
         content['token'] = jwt_encode(content, config['jwt_secret'], algorithm=config['jwt_alg'])
         return JSONResponse(content=content)
 
-    return Response(status_code=401, content='Incorrect login or passwd was passed')
+    raise HTTPException(status_code=401, detail='Incorrect login or passwd was passed')
 
 
 @auth_router.get('/auth/ok')

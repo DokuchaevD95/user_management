@@ -8,7 +8,8 @@ __all__ = [
 
 
 from datetime import datetime
-from pydantic import BaseModel
+from fastapi import HTTPException
+from pydantic import BaseModel, validator
 from sqlalchemy.orm import declarative_base
 from typing import Optional
 from sqlalchemy import (
@@ -45,6 +46,30 @@ class UserModel(BaseModel):
     is_admin: bool = False
     created_at: datetime = datetime.now()
     deleted_at: Optional[datetime]
+
+    @validator('password')
+    def empty_password(cls, value):
+        if not value:
+            raise HTTPException(status_code=400, detail='Password is empty')
+        return value
+
+    @validator('last_name')
+    def empty_last_name(cls, value):
+        if not value:
+            raise HTTPException(status_code=400, detail='Last name is empty')
+        return value
+
+    @validator('first_name')
+    def empty_first_name(cls, value):
+        if not value:
+            raise HTTPException(status_code=400, detail='First name is empty')
+        return value
+
+    @validator('login')
+    def lower_login(cls, value):
+        if not value:
+            raise HTTPException(status_code=400, detail='Login name is empty')
+        return value.lower()
 
     class Config:
         orm_mode = True

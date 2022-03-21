@@ -15,7 +15,8 @@ async function post(url, data) {
         return response
     }
 
-    alert(await response.text());
+    data = await response.json();
+    alert(data.detail);
     throw new Error('Fetch err');
 }
 
@@ -27,7 +28,8 @@ async function get(url) {
         return response
     }
 
-    alert(await response.text());
+    data = await response.json();
+    alert(data.detail);
     throw new Error('Fetch err');
 }
 

@@ -1,15 +1,15 @@
 {% extends 'html/layout.html' %}
 {% block content %}
-    <link rel="stylesheet" href="/templates/css/user-list.css">
     <table class="table">
         <thead>
             <tr>
-                <th scope="col" class="w-7">ID</th>
-                <th scope="col" class="w-20">login</th>
-                <th scope="col" class="w-20">Last Name</th>
-                <th scope="col" class="w-20">First Name</th>
-                <th scope="col" class="w-20">Created at</th>
-                <th scope="col" class="w-13">
+                <th scope="col">ID</th>
+                <th scope="col">login</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">First Name</th>
+                <th scope="col">Created at</th>
+                <th scope="col">Admin</th>
+                <th scope="col">
                     {% if curr_user.is_admin %}
                     <a href="/users/create" class="btn btn-sm btn-success" id="create-user">Create</a>
                     {% endif %}
@@ -24,6 +24,7 @@
                 <td>{{ user.last_name }}</td>
                 <td>{{ user.first_name }}</td>
                 <td>{{ user.created_at }}</td>
+                <td>{% if user.is_admin %} Yes {% else %} No {% endif %}</td>
                 <td>
                     {% if curr_user.is_admin %}
                     <button id="edit" data-user_id="{{ user.id }}" class="btn btn-sm btn-warning">Edit</button>

@@ -28,7 +28,7 @@ async def render_users_list_page(user_service: UserService = Depends(UserService
         curr_user=curr_user,
         users=users
     )
-    return HTMLResponse(status_code=200, content=content)
+    return HTMLResponse(content=content)
 
 
 @user_router.get('/create')
@@ -38,7 +38,7 @@ async def render_user_create_page(curr_user: Optional[UserModel] = Depends(get_c
 
     template = jinja_env.get_template('html/user-create.html')
     content = await template.render_async()
-    return HTMLResponse(status_code=200, content=content)
+    return HTMLResponse(content=content)
 
 
 @user_router.get('/edit/{user_id}')
