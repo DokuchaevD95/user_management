@@ -81,20 +81,18 @@ class UserService:
                 await session.commit()
                 return UserModel.from_orm(user_orm)
 
-    @staticmethod
-    async def update(user_id: int, user: UserModel) -> UserModel:
+    async def update(self, user_id: int, user: UserModel) -> UserModel:
         async with async_session() as session:
             async with session.begin():
-                statement = select(UserOrm).where(
-                    UserOrm.login == user.login.lower()
-                )
-                if await session.scalar(statement):
-                    raise HTTPException(status_code=400, detail='Login already in use')
-
                 statement = select(UserOrm).where(
                     UserOrm.id == user_id
                 )
                 user_orm = await session.scalar(statement)
+                user_with_same_login = await self.get_by_login(user.login)
+
+                if user_with_same_login and user_id != user_with_same_login.id:
+                    raise HTTPException(400, detail='Login already in use')
+
                 fields = user.dict(exclude={'created_at', 'id'})
                 for key, value in fields.items():
                     setattr(user_orm, key, value)

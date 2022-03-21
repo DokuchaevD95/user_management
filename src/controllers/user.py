@@ -87,4 +87,11 @@ async def edit_user(user_id: int,
         return RedirectResponse('/users/list', status_code=302)
 
     user = await user_service.update(user_id, user)
+    logout_condition = [
+        user.password != curr_user.password,
+        user.is_admin != curr_user.is_admin,
+        user.login != curr_user.login
+    ]
+    if user.id == curr_user.id and any(logout_condition):
+        return RedirectResponse('/logout', status_code=302)
     return user
