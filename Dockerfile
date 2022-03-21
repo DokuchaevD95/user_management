@@ -13,5 +13,3 @@ COPY src/ $APP_PATH/
 WORKDIR $APP_PATH
 
 EXPOSE 8000
-
-CMD uvicorn main:app --host 0.0.0.0

@@ -11,4 +11,15 @@ services:
       - "5432:5432"
   server:
     build: .
-    network_mode: host
+    environment:
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "3LdNmrGS"
+      POSTGRES_HOST: "postgres"
+    restart: always
+    links:
+      - "db:postgres"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    command: uvicorn main:app --host 0.0.0.0
