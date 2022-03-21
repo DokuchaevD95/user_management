@@ -42,8 +42,8 @@ class UserModel(BaseModel):
     password: Optional[str]
     last_name: str
     first_name: str
-    is_admin: bool
-    created_at: datetime
+    is_admin: bool = False
+    created_at: datetime = datetime.now()
     deleted_at: Optional[datetime]
 
     class Config:

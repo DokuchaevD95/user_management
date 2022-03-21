@@ -1,10 +1,14 @@
 {% extends 'html/layout.html' %}
 {% block content %}
 <link rel="stylesheet" href="/templates/css/user-edit.css">
-<form class="container justify-content col-4 needs-validation" action="/users/save/{{ user.id }}" method="POST">
+<form class="container justify-content col-4 needs-validation">
+    <div class="form-group d-none">
+        <label for="id" class="row form-label">Login</label>
+        <input name="id" value="{{ user.id }}" id="id" class="row form-control" type="number" required>
+    </div>
     <div class="mb-3 form-group">
         <label for="login" class="row form-label">Login</label>
-        <input name="login" value="{{ user.password }}" id="login" class="row form-control" type="text" required>
+        <input name="login" value="{{ user.login }}" id="login" class="row form-control" type="text" required>
     </div>
     <div class="mb-3 form-group">
         <label for="password" class="row form-label">Passwd</label>
@@ -22,6 +26,7 @@
         <label for="is_admin" class="form-label">Is Admin</label>
         <input name="is_admin" id="is_admin" class="form-check-input" type="checkbox" {% if user.is_admin %} checked {% endif %}>
     </div>
-    <button class="btn btn-success" type="submit">Save</button>
+    <button id="edit" class="btn btn-success" type="button">Save</button>
 </form>
+<script src="/templates/js/user-edit.js"></script>
 {% endblock %}

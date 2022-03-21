@@ -64,17 +64,27 @@ class UserService:
                 return UserModel.from_orm(user)
 
     @staticmethod
-    async def upsert(user: UserModel) -> UserModel:
+    async def create(user: UserModel) -> UserModel:
         async with async_session() as session:
             async with session.begin():
-                if user.id:
-                    statement = select(UserOrm).where(UserOrm.id == user.id)
-                    user_orm = await session.scalar(statement)
-                    for key, value in user.dict().items():
-                        setattr(user_orm, key, value)
-                else:
-                    user_orm = UserOrm(**user.dict())
+                user_orm = UserOrm(**user.dict())
+                session.add(user_orm)
+                await session.commit()
+                return UserModel.from_orm(user_orm)
+
+    @staticmethod
+    async def update(user_id: int, user: UserModel) -> UserModel:
+        async with async_session() as session:
+            async with session.begin():
+                statement = select(UserOrm).where(
+                    UserOrm.id == user_id
+                )
+                user_orm = await session.scalar(statement)
+                fields = user.dict(exclude={'created_at', 'id'})
+                for key, value in fields.items():
+                    setattr(user_orm, key, value)
 
                 session.add(user_orm)
                 await session.commit()
                 return UserModel.from_orm(user_orm)
+

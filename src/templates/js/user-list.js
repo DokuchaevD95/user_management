@@ -1,8 +1,11 @@
 const editButtons = document.querySelectorAll('#edit');
 const delButtons = document.querySelectorAll('#delete');
 
-function toDeletePage(url) {
-    return () => document.location.replace(url);
+function handeDeleteClosure(url) {
+    return async () => {
+        await get(url);
+        document.location.replace('/users/list');
+    };
 }
 
 function toEditPage(url) {
@@ -16,5 +19,5 @@ editButtons.forEach((element, key, list) => {
 
 delButtons.forEach((element, key, list) => {
     let url = '/users/delete/' + element.dataset.user_id;
-    element.addEventListener('click', toDeletePage(url));
+    element.addEventListener('click', handeDeleteClosure(url))
 })

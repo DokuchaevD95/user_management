@@ -16,7 +16,5 @@ async function checkAuth() {
     });
 
     let userData = await response.json();
-    let token = userData.token;
-    console.log(userData);
-    document.location.replace('/auth/ok?jwt=' + token)
+    document.location.replace('/auth/ok?jwt=' + userData.token)
 }
