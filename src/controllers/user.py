@@ -3,7 +3,7 @@
 __all__ = ['user_router']
 
 from typing import Optional
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse, Response, RedirectResponse
 
 from models import UserModel
@@ -80,7 +80,8 @@ async def delete_user(user_id: int,
                       user_service: UserService = Depends(UserService)
                       ) -> Response:
     """
-    Контроллер удаление пользователя
+    Контроллер удаление пользователя.
+    Текущего пользователя (себя) удалить нельзя
     :param user_id:
     :param curr_user:
     :param user_service:
@@ -88,6 +89,9 @@ async def delete_user(user_id: int,
     """
     if not curr_user or not curr_user.is_admin:
         return RedirectResponse('/users/list')
+
+    if curr_user.id == user_id:
+        raise HTTPException(status_code=400, detail='You cannot delete yourself')
 
     await user_service.delete(user_id)
     return RedirectResponse('/users/list', status_code=302)
