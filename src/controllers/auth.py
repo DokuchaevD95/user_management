@@ -6,7 +6,7 @@ import json
 
 from jwt import encode as jwt_encode
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from fastapi import APIRouter, Depends, Response, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
@@ -23,6 +23,18 @@ auth_router = APIRouter()
 class AuthParams(BaseModel):
     login: str
     password: str
+
+    @validator('login')
+    def login_not_empty(cls, value):
+        if not value:
+            raise HTTPException(status_code=400, detail='Login is empty')
+        return value
+
+    @validator('password')
+    def passwd_not_empty(cls, value):
+        if not value:
+            raise HTTPException(status_code=400, detail='Password is empty')
+        return value
 
 
 @auth_router.get('/')
