@@ -11,8 +11,8 @@ from models import BaseOrm
 
 async def seed():
     statement = f"""
-        INSERT INTO users (id, login, password, last_name, first_name, is_admin, created_at)
-        SELECT 1, 'admin', 'admin', 'Системный', 'Пользователь', TRUE, '{datetime.now()}'
+        INSERT INTO users (login, password, last_name, first_name, is_admin, created_at)
+        SELECT 'admin', 'admin', 'Системный', 'Пользователь', TRUE, '{datetime.now()}'
         WHERE NOT EXISTS (
             SELECT id FROM users WHERE id = 1
         );
