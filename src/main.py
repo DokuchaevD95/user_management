@@ -14,6 +14,7 @@ app.include_router(auth_router)
 app.include_router(user_router)
 
 
+# Монтирование шаблонов / css / js в роутинг приложения
 app.mount('/templates', StaticFiles(directory='templates'), name='templates')
 
 
@@ -23,4 +24,5 @@ async def seed_db():
 
 
 if __name__ == '__main__':
+    # запуск для dev разработки
     uvicorn.run(app, host='127.0.0.1', port=8000)

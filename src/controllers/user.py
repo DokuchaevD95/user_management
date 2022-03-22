@@ -19,6 +19,12 @@ user_router = APIRouter(prefix='/users')
 async def render_users_list_page(user_service: UserService = Depends(UserService),
                                  curr_user: Optional[UserModel] = Depends(get_curr_user)
                                  ) -> Response:
+    """
+    Рендер списка пользователя
+    :param user_service:
+    :param curr_user:
+    :return:
+    """
     if not curr_user:
         return RedirectResponse('/auth')
 
@@ -33,6 +39,11 @@ async def render_users_list_page(user_service: UserService = Depends(UserService
 
 @user_router.get('/create')
 async def render_user_create_page(curr_user: Optional[UserModel] = Depends(get_curr_user)) -> Response:
+    """
+    Рендер страницы создания пользователя
+    :param curr_user:
+    :return:
+    """
     if not curr_user or not curr_user.is_admin:
         return RedirectResponse('/users/list')
 
@@ -46,6 +57,14 @@ async def render_user_edit_page(user_id: int,
                                 curr_user: Optional[UserModel] = Depends(get_curr_user),
                                 user_service: UserService = Depends(UserService)
                                 ) -> Response:
+    """
+    Контроллер отдает страницу редактирования пользователя.
+    Предусмотрена подгрузка всех текущих данных
+    :param user_id:
+    :param curr_user:
+    :param user_service:
+    :return:
+    """
     if not curr_user or not curr_user.is_admin:
         return RedirectResponse('/users/list')
 
@@ -60,6 +79,13 @@ async def delete_user(user_id: int,
                       curr_user: Optional[UserModel] = Depends(get_curr_user),
                       user_service: UserService = Depends(UserService)
                       ) -> Response:
+    """
+    Контроллер удаление пользователя
+    :param user_id:
+    :param curr_user:
+    :param user_service:
+    :return:
+    """
     if not curr_user or not curr_user.is_admin:
         return RedirectResponse('/users/list')
 
@@ -71,6 +97,13 @@ async def delete_user(user_id: int,
 async def save_user(user: UserModel,
                     curr_user: Optional[UserModel] = Depends(get_curr_user),
                     user_service: UserService = Depends(UserService)):
+    """
+    Контроллер создание пользователя
+    :param user:
+    :param curr_user:
+    :param user_service:
+    :return:
+    """
     if not curr_user or not curr_user.is_admin:
         return RedirectResponse('/users/list', status_code=302)
 
@@ -83,6 +116,16 @@ async def edit_user(user_id: int,
                     user: UserModel,
                     curr_user: Optional[UserModel] = Depends(get_curr_user),
                     user_service: UserService = Depends(UserService)):
+    """
+    Контроллер реджактиррвоания пользователя.
+    Если редактрруется текущий авторизованный пользователь
+    (логин, пароль, права), то его разлогинит
+    :param user_id:
+    :param user:
+    :param curr_user:
+    :param user_service:
+    :return:
+    """
     if not curr_user or not curr_user.is_admin:
         return RedirectResponse('/users/list', status_code=302)
 

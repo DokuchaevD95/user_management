@@ -20,6 +20,7 @@ from shared.current_user import get_curr_user
 auth_router = APIRouter()
 
 
+# Pydantic модель для получения авторизационных данных
 class AuthParams(BaseModel):
     login: str
     password: str
@@ -40,6 +41,12 @@ class AuthParams(BaseModel):
 @auth_router.get('/')
 @auth_router.get('/auth')
 async def render_auth_page(curr_user: Optional[UserModel] = Depends(get_curr_user)) -> Response:
+    """
+    Рендерит страницу с формой авторизации.
+    Доступна по двум урлам / и /auth
+    :param curr_user:
+    :return:
+    """
     if curr_user:
         return RedirectResponse('/users/list')
 
@@ -50,6 +57,14 @@ async def render_auth_page(curr_user: Optional[UserModel] = Depends(get_curr_use
 
 @auth_router.post('/auth')
 async def check_auth(params: AuthParams, user_service: UserService = Depends(UserService)) -> Response:
+    """
+    Проверка данных авторизации пользователя.
+    На перспективу true way хранить hash пароля
+    пользователя в Бд, а не в чистом виде.
+    :param params:
+    :param user_service:
+    :return:
+    """
     user = await user_service.get_by_login(params.login)
     if user and user.password == params.password:
         content = user.json(exclude={'password'})
@@ -62,6 +77,11 @@ async def check_auth(params: AuthParams, user_service: UserService = Depends(Use
 
 @auth_router.get('/auth/ok')
 async def save_auth_token(jwt: Optional[str] = '') -> Response:
+    """
+    Сохраниен токена в cookie
+    :param jwt:
+    :return:
+    """
     response = RedirectResponse('/users/list')
     response.set_cookie(key='token', value=jwt)
     return response
@@ -69,6 +89,10 @@ async def save_auth_token(jwt: Optional[str] = '') -> Response:
 
 @auth_router.get('/logout')
 async def logout() -> Response:
+    """
+    Выход / удаление куки
+    :return:
+    """
     response = RedirectResponse('/auth')
     response.delete_cookie('token')
     return response

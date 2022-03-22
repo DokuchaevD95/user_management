@@ -1,3 +1,7 @@
+"""Инициализация jinja энвайронмента. Singleton"""
+
+__all__ = ['jinja_env']
+
 from jinja2 import Environment, FileSystemLoader
 
 

@@ -14,6 +14,11 @@ from models import UserModel, UserOrm
 class UserService:
     @staticmethod
     async def get_by_login(login: str) -> Optional[UserModel]:
+        """
+        Метод получения пользвоателя по логину
+        :param login:
+        :return:
+        """
         async with async_session() as session:
             statement = select(UserOrm).where(
                 UserOrm.login == login,
@@ -26,6 +31,11 @@ class UserService:
 
     @staticmethod
     async def get(id_: int) -> Optional[UserModel]:
+        """
+        Метод получения пользователя по ID
+        :param id_:
+        :return:
+        """
         async with async_session() as session:
             statement = select(UserOrm).where(
                 UserOrm.id == id_,
@@ -38,6 +48,10 @@ class UserService:
 
     @staticmethod
     async def fetch() -> List[UserModel]:
+        """
+        Получение списка пользователей. Пагинация не предусмотрена
+        :return:
+        """
         async with async_session() as session:
             statement = select(UserOrm).where(
                 UserOrm.deleted_at.is_(None)
@@ -50,6 +64,13 @@ class UserService:
 
     @staticmethod
     async def delete(id_: int) -> Optional[UserModel]:
+        """
+        Метод удаления пользвоателя.
+        Реализовано по принципу Soft Delete
+        Физически из базы пользователь не удаляется!
+        :param id_:
+        :return:
+        """
         async with async_session() as session:
             async with session.begin():
                 statement = select(UserOrm).where(
@@ -67,6 +88,12 @@ class UserService:
 
     @staticmethod
     async def create(user: UserModel) -> UserModel:
+        """
+        Создание пользователя с проверкой на
+        существование логина
+        :param user:
+        :return:
+        """
         async with async_session() as session:
             async with session.begin():
                 user_orm = UserOrm(**user.dict())
@@ -82,6 +109,13 @@ class UserService:
                 return UserModel.from_orm(user_orm)
 
     async def update(self, user_id: int, user: UserModel) -> UserModel:
+        """
+        Обновление пользователя. Не запрещается обновление
+        логина, но логин должен быть уникальным
+        :param user_id:
+        :param user:
+        :return:
+        """
         async with async_session() as session:
             async with session.begin():
                 statement = select(UserOrm).where(

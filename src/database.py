@@ -15,5 +15,6 @@ URL = f'{db_config["drivername"]}://' \
       f'{db_config["host"]}:{db_config["port"]}/' \
       f'{db_config["dbname"]}'
 
+# Асинхронные engine и фабрика сессий SQLAlchemy
 engine = create_async_engine(URL)
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)

@@ -37,6 +37,7 @@ class UserOrm(BaseOrm):
     deleted_at = Column(DateTime, nullable=True, default=None)
 
 
+# Pydantic Model
 class UserModel(BaseModel):
     id: Optional[int]
     login: str

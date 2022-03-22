@@ -18,6 +18,8 @@ async def seed():
         );
     """
 
+    # Реализовано в try из за docker-compose
+    # слишком долго открывается порт либо инциализируется docker network
     conn = None
     while not conn:
         try:
